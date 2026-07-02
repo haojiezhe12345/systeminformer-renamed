@@ -1,35 +1,8 @@
-## Fork information
-
-Changed output executable name to `si.exe` to:
-- Avoid being detected by anticheat software  
-  For example: AntiCheat Expert (ACE) detects this software solely on its process name  
-  (even if you rename `cmd.exe` into `SystemInformer.exe` and run it, it will say it detected hacking tools)  
-  So by changing the executable name it will no longer trigger anticheat, as long as you do not read / write game process memory with this tool
-
-### Rename details
-
-Simply renaming `SystemInformer.exe` will could cause the plugins fail to load (as described in [SDK readme](SystemInformer/sdk/readme.txt)), because the plugin DLLs have imports from the main exeutable. So you have to rebuild them if you want to change main exeutable name.
-
-In `SystemInformer\SystemInformer.vcxproj`:  
-- Add `TargetName` with value `si`, this will override the default output binary name (you may also change it in Visual Studio in the properties dialog)
-
-In `plugins\Plugins.props`:  
-- Change `LocalDebuggerCommand` to `si.exe` (for debugging purposes, not required if you're not debugging plugins)
-- Replace all occurrences of `SystemInformer.lib` to `si.lib`
-
-In `tools\CustomBuildTool\Build.cs`:  
-- Replace all `SystemInformer.lib` with `si.lib`  
-  This custom build tool copies the `lib` from `bin\release*\` to `sdk\lib\<arch>\` when building the main exeutable. The `lib` is used for linking the main exeutable when building plugins
-
-The full modifications can be found in [this commit](https://github.com/haojiezhe12345/systeminformer/commit/ed6c13c70d82f035da755dacc2af11bfd28f965f)
-
----
-
 <p align="center">
     <a href="https://systeminformer.com">
         <img src="https://github.com/winsiderss/systeminformer/raw/master/SystemInformer/resources/systeminformer-128x128.png"/>
     </a>
-    <h1 align="center">System Informer</h1>
+    <h1 align="center">System Informer (Renamed)</h1>
     <h5 align="center">A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.</h5>
     <h6 align="center">Brought to you by Winsider Seminars & Solutions, Inc.</h6>
 </p>
@@ -66,6 +39,34 @@ The full modifications can be found in [this commit](https://github.com/haojiezh
         <img src="https://img.shields.io/badge/Website-grey?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTIgMTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNiIgY3k9IjYiIHI9IjUuNSIgc3Ryb2tlPSJ3aGl0ZSIvPjxlbGxpcHNlIGN4PSI2IiBjeT0iNiIgcng9IjUuNSIgcnk9IjIiIHRyYW5zZm9ybT0icm90YXRlKDkwIDYgNikiIHN0cm9rZT0id2hpdGUiLz48cGF0aCBkPSJNMSA2SDExIiBzdHJva2U9IndoaXRlIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4="/>
     </a>
 </p>
+
+## Fork information
+
+This fork version of System Informer **renamed main executable from `SystemInformer.exe` to `si.exe`** to:
+- Avoid being detected by anticheat software.  
+  For example: AntiCheat Expert (ACE) detects this software solely on its process name.  
+  (even if you rename `cmd.exe` into `SystemInformer.exe` and run it, it will say it detected hacking tools).  
+  So by changing the executable name it will no longer trigger anticheat, as long as you do not read / write game process memory with this tool.
+
+> This branch also includes a fix for the incorrectly displayed `CPU (relative)` value when custom affinity settings is applyed to a process.  
+> The fix is at commit [ea9b946](https://github.com/haojiezhe12345/systeminformer-renamed/commit/ea9b946f81c0763205e97105ad517888e5013929) and is documented at [FIX_CPU_RELATIVE.md](FIX_CPU_RELATIVE.md).
+
+### Rename details
+
+Simply renaming `SystemInformer.exe` will could cause the plugins fail to load (as described in [SDK readme](SystemInformer/sdk/readme.txt)), because the plugin DLLs have imports from the main exeutable. So you have to rebuild them if you want to change main exeutable name.
+
+In [`SystemInformer\SystemInformer.vcxproj`](SystemInformer\SystemInformer.vcxproj):
+- Add `TargetName` with value `si`, this will override the default output binary name (you may also change it in Visual Studio in the properties dialog).
+
+In [`plugins\Plugins.props`](plugins\Plugins.props):
+- Change `LocalDebuggerCommand` to `si.exe` (for debugging purposes, not required if you're not debugging plugins).
+- Replace all occurrences of `SystemInformer.lib` to `si.lib`.
+
+In [`tools\CustomBuildTool\Build.cs`](tools\CustomBuildTool\Build.cs):
+- Replace all `SystemInformer.lib` with `si.lib`.  
+  This custom build tool copies the `lib` from `bin\release*\` to `sdk\lib\<arch>\` when building the main exeutable. The `lib` is used for linking the main exeutable when building plugins.
+
+The full modifications can be found in [this commit](https://github.com/haojiezhe12345/systeminformer/commit/ed6c13c70d82f035da755dacc2af11bfd28f965f).
 
 ## System requirements
 
