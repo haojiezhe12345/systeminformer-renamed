@@ -55,14 +55,14 @@ This fork version of System Informer **renamed main executable from `SystemInfor
 
 Simply renaming `SystemInformer.exe` will could cause the plugins fail to load (as described in [SDK readme](SystemInformer/sdk/readme.txt)), because the plugin DLLs have imports from the main exeutable. So you have to rebuild them if you want to change main exeutable name.
 
-In [`SystemInformer\SystemInformer.vcxproj`](SystemInformer\SystemInformer.vcxproj):
+In [`SystemInformer/SystemInformer.vcxproj`](SystemInformer/SystemInformer.vcxproj):
 - Add `TargetName` with value `si`, this will override the default output binary name (you may also change it in Visual Studio in the properties dialog).
 
-In [`plugins\Plugins.props`](plugins\Plugins.props):
+In [`plugins/Plugins.props`](plugins/Plugins.props):
 - Change `LocalDebuggerCommand` to `si.exe` (for debugging purposes, not required if you're not debugging plugins).
 - Replace all occurrences of `SystemInformer.lib` to `si.lib`.
 
-In [`tools\CustomBuildTool\Build.cs`](tools\CustomBuildTool\Build.cs):
+In [`tools/CustomBuildTool\Build.cs`](tools/CustomBuildTool/Build.cs):
 - Replace all `SystemInformer.lib` with `si.lib`.  
   This custom build tool copies the `lib` from `bin\release*\` to `sdk\lib\<arch>\` when building the main exeutable. The `lib` is used for linking the main exeutable when building plugins.
 
