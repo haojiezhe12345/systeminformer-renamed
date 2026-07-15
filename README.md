@@ -48,8 +48,7 @@ This fork version of System Informer **renamed main executable from `SystemInfor
   (even if you rename `cmd.exe` into `SystemInformer.exe` and run it, it will say it detected hacking tools).  
   So by changing the executable name it will no longer trigger anticheat, as long as you do not read / write game process memory with this tool.
 
-> This branch also includes a fix for the incorrectly displayed `CPU (relative)` value when custom affinity settings is applyed to a process.  
-> The fix is at commit [ea9b946](https://github.com/haojiezhe12345/systeminformer-renamed/commit/ea9b946f81c0763205e97105ad517888e5013929) and is documented at [FIX_CPU_RELATIVE.md](FIX_CPU_RELATIVE.md).
+Based on commit [9bd1e37](https://github.com/winsiderss/systeminformer/commit/9bd1e37ce66c7792449f54e696602435e465d87d) with some additional personal fixes.
 
 ### Rename details
 
@@ -67,6 +66,13 @@ In [`tools/CustomBuildTool\Build.cs`](tools/CustomBuildTool/Build.cs):
   This custom build tool copies the `lib` from `bin\release*\` to `sdk\lib\<arch>\` when building the main exeutable. The `lib` is used for linking the main exeutable when building plugins.
 
 The full modifications can be found in [this commit](https://github.com/haojiezhe12345/systeminformer/commit/ed6c13c70d82f035da755dacc2af11bfd28f965f).
+
+### Additional fixes
+
+- Fix incorrectly displayed `CPU (relative)` value when custom affinity settings is applyed to a process ([ea9b946](https://github.com/haojiezhe12345/systeminformer-renamed/commit/ea9b946f81c0763205e97105ad517888e5013929)).  
+  Documented at [FIX_CPU_RELATIVE.md](FIX_CPU_RELATIVE.md).
+- Fix inflated `GPU dedicated bytes` due to counting all committed bytes instead of resident bytes ([f89194f](https://github.com/haojiezhe12345/systeminformer-renamed/commit/f89194f268fde410d298a065a9337afccaa5e7b4)).  
+  Documented at [FIX_GPU_MEMORY.md](FIX_GPU_MEMORY.md).
 
 ## System requirements
 
