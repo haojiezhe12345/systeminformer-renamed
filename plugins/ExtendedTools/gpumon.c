@@ -478,17 +478,28 @@ VOID EtpGpuUpdateProcessSegmentInformation(
 
             if (NT_SUCCESS(D3DKMTQueryStatistics(&queryStatistics)))
             {
-                ULONG64 bytesCommitted;
-
                 if (EtWindowsVersion >= WINDOWS_8)
-                    bytesCommitted = queryStatistics.QueryResult.ProcessSegmentInformation.BytesCommitted;
-                else
-                    bytesCommitted = (ULONG)queryStatistics.QueryResult.ProcessSegmentInformation.BytesCommitted;
+                {
+                    ULONG64 residentBytes = 0;
 
-                if (RtlCheckBit(&gpuAdapter->ApertureBitMap, j))
-                    sharedUsage += bytesCommitted;
+                    for (ULONG p = 0; p < D3DKMT_QUERYSTATISTICS_SEGMENT_PREFERENCE_MAX; p++)
+                        residentBytes += queryStatistics.QueryResult.ProcessSegmentInformation.VideoMemory.AllocsResidentInP[p].Bytes;
+                    residentBytes += queryStatistics.QueryResult.ProcessSegmentInformation.VideoMemory.AllocsResidentInNonPreferred.Bytes;
+
+                    if (RtlCheckBit(&gpuAdapter->ApertureBitMap, j))
+                        sharedUsage += residentBytes;
+                    else
+                        dedicatedUsage += residentBytes;
+                }
                 else
-                    dedicatedUsage += bytesCommitted;
+                {
+                    ULONG64 bytesCommitted = (ULONG)queryStatistics.QueryResult.ProcessSegmentInformation.BytesCommitted;
+
+                    if (RtlCheckBit(&gpuAdapter->ApertureBitMap, j))
+                        sharedUsage += bytesCommitted;
+                    else
+                        dedicatedUsage += bytesCommitted;
+                }
             }
         }
 
@@ -793,31 +804,12 @@ VOID NTAPI EtGpuProcessesUpdatedCallback(
             continue;
         }
 
+        // Always use D3DKMT for memory (resident bytes, not committed bytes from perf counters).
+        EtpGpuUpdateProcessSegmentInformation(block);
+
         if (EtGpuD3DEnabled)
         {
-            ULONG64 sharedUsage;
-            ULONG64 dedicatedUsage;
-            ULONG64 commitUsage;
-
             block->GpuNodeUtilization = EtLookupProcessGpuUtilization(block->ProcessItem->ProcessId);
-
-            if (EtLookupProcessGpuMemoryCounters(
-                block->ProcessItem->ProcessId,
-                &sharedUsage,
-                &dedicatedUsage,
-                &commitUsage
-                ))
-            {
-                block->GpuSharedUsage = sharedUsage;
-                block->GpuDedicatedUsage = dedicatedUsage;
-                block->GpuCommitUsage = commitUsage;
-            }
-            else
-            {
-                block->GpuSharedUsage = 0;
-                block->GpuDedicatedUsage = 0;
-                block->GpuCommitUsage = 0;
-            }
 
             if (runCount != 0)
             {
@@ -834,7 +826,6 @@ VOID NTAPI EtGpuProcessesUpdatedCallback(
         }
         else
         {
-            EtpGpuUpdateProcessSegmentInformation(block);
             EtpGpuUpdateProcessNodeInformation(block);
 
             if (elapsedTime != 0)
